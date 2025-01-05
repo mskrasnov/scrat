@@ -4,7 +4,7 @@ Scrat is a simple console Mastodon client written and Rust. Developing it as a h
 
 ## Features
 
-- Console interface without photos, videos and raindbow emojis;
+- Console interface without photos, videos and rainbow emojis;
 - ...
 
 ## Technology stack
