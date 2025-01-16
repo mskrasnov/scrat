@@ -1,6 +1,6 @@
 # Scrat
 
-![](assets/main_win.png)
+![](assets/main_win.png) | ![](assets/sl.png)
 
 Scrat is a simple console Mastodon client written and Rust. Developing it as a hobby in freetime.
 
