@@ -23,6 +23,7 @@ async fn main() -> Result<()> {
         match cmd {
             command::Command::NewStatus => actions::create_new_status(&md).await?,
             command::Command::StatusList => actions::get_statuses(&md).await?,
+            command::Command::Notifications => actions::get_notifications(&md).await?,
             command::Command::Help => command::Command::print_help(),
             command::Command::Exit => exit = true,
             _ => {}

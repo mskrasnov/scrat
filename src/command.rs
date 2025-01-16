@@ -28,6 +28,7 @@ pub fn prompt<M: Display>(msg: M) -> Result<String> {
 pub enum Command {
     NewStatus,
     StatusList,
+    Notifications,
 
     Help,
     Exit,
@@ -41,7 +42,8 @@ impl FromStr for Command {
     fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
         Ok(match s {
             "new-status" | "status" => Self::NewStatus,
-            "status-list" => Self::StatusList,
+            "status-list" | "sl" => Self::StatusList,
+            "notify" => Self::Notifications,
             "help" => Self::Help,
             "exit" => Self::Exit,
 
@@ -60,8 +62,14 @@ impl Command {
         );
         println!(
             "{:>width$}: {}",
-            "status-list".bold(),
+            "status-list | sl".bold(),
             "print 5 my statuses".dimmed(),
+            width = 25
+        );
+        println!(
+            "{:>width$}: {}",
+            "notify".bold(),
+            "print notifications".dimmed(),
             width = 25
         );
         println!(

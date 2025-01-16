@@ -1,5 +1,6 @@
 use colored::Colorize;
 use futures_util::StreamExt;
+use mastodon_async::entities::notification::NotificationType;
 use mastodon_async::{prelude::*, Error, Result, StatusesRequest};
 
 use crate::command;
@@ -39,6 +40,54 @@ pub async fn create_new_status(md: &Mastodon) -> Result<()> {
     Ok(())
 }
 
+fn date_str(y: i32, m: String, d: u8, h: u8, min: u8) -> String {
+    let date = format!("{y} {m}, {}{d}", if d < 10 { "0" } else { "" })
+        .cyan()
+        .dimmed();
+    let time = format!(
+        "{}{}:{}{}",
+        if h < 10 { "0" } else { "" },
+        h,
+        if min < 10 { "0" } else { "" },
+        min
+    )
+    .cyan()
+    .bold();
+
+    format!("{date} {time}")
+}
+
+pub async fn get_notifications(md: &Mastodon) -> Result<()> {
+    md.notifications()
+        .await?
+        .items_iter()
+        .for_each(|n| async move {
+            print!(
+                "{} {} {} ",
+                match n.notification_type {
+                    NotificationType::Mention => "Mention  ",
+                    NotificationType::Reblog => "Reblog   ",
+                    NotificationType::Favourite => "Favourite",
+                    NotificationType::Follow => "Follow   ",
+                    NotificationType::FollowRequest => "FollowReq",
+                    NotificationType::Poll => "Poll     ",
+                },
+                format!("#{}", n.id).yellow(),
+                date_str(
+                    n.created_at.year(),
+                    n.created_at.month().to_string(),
+                    n.created_at.day(),
+                    n.created_at.hour(),
+                    n.created_at.minute()
+                ),
+            );
+            println!("{} ({})", &n.account.display_name, &n.account.acct.dimmed());
+        })
+        .await;
+
+    Ok(())
+}
+
 pub async fn get_statuses(md: &Mastodon) -> Result<()> {
     let mut filters = StatusesRequest::new();
     filters.limit(5);
@@ -50,16 +99,25 @@ pub async fn get_statuses(md: &Mastodon) -> Result<()> {
         .await?
         .items_iter()
         .for_each(|status| async move {
-            // dbg!(&status.content);
             match remove_html_symbols(&status.content) {
                 Ok(content) => {
                     let created = &status.created_at;
                     println!(
-                        "{} {}, {}:{}",
+                        "{} {} {}",
                         "Status created:".bold().yellow(),
-                        created.year(),
-                        created.hour(),
-                        created.minute(),
+                        format!("{} {}, {}", created.year(), created.month(), created.day())
+                            .cyan()
+                            .dimmed(),
+                        format!("{}:{}", created.hour(), {
+                            let m = created.minute();
+                            if m < 10 {
+                                format!("0{m}")
+                            } else {
+                                m.to_string()
+                            }
+                        })
+                        .cyan()
+                        .bold(),
                     );
                     println!("{}\n", colored_str(&content));
                 }
@@ -93,17 +151,20 @@ fn remove_html_symbols(s: &str) -> Result<String> {
         }
 
         if is_add {
-            buf.push(ch as u16);
+            buf.push(ch);
         }
     }
 
-    // dbg!(&buf);
+    let mut s = String::new();
+    for ch in buf {
+        s.push(ch);
+    }
 
-    let s = String::from_utf16(&buf)
-        .unwrap_or(String::new())
+    let s = s
         .replace("&quot;", "\"")
         .replace("&lt;", "<")
         .replace("&gt;", ">")
+        .replace("...", "…")
         .trim()
         .to_string();
 
