@@ -6,11 +6,16 @@
 //! :<COMMAND> <SUBCOMMAND> <ARG 1> <ARG 2> ... <ARG N>
 //! ```
 
-use color_eyre::Result;
-use std::{fmt::Display, io::{stdin, stdout, Write}, str::FromStr};
+use anyhow::Result;
+use colored::Colorize;
+use std::{
+    fmt::Display,
+    io::{stdin, stdout, Write},
+    str::FromStr,
+};
 
 pub fn prompt<M: Display>(msg: M) -> Result<String> {
-    print!("{msg}> ");
+    print!("{}{} ", msg.to_string().bold(), "%".bold().yellow());
     stdout().flush()?;
 
     let mut s = String::new();
@@ -47,8 +52,23 @@ impl FromStr for Command {
 
 impl Command {
     pub fn print_help() {
-        println!("{:>width$}: {}", "new-status | status", "write new status", width = 25);
-        println!("{:>width$}: {}", "status-list", "print 5 my statuses", width = 25);
-        println!("{:>width$}: {}", "exit", "exit program", width = 25);
+        println!(
+            "{:>width$}: {}",
+            "new-status | status".bold(),
+            "write new status".dimmed(),
+            width = 25
+        );
+        println!(
+            "{:>width$}: {}",
+            "status-list".bold(),
+            "print 5 my statuses".dimmed(),
+            width = 25
+        );
+        println!(
+            "{:>width$}: {}",
+            "exit".bold(),
+            "exit program".dimmed(),
+            width = 25
+        );
     }
 }

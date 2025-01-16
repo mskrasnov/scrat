@@ -1,9 +1,9 @@
 //! Simple logging
 
-use serde::{Serialize, Deserialize};
-use toml;
+use anyhow::Result;
+use serde::{Deserialize, Serialize};
 use std::{fs, path::Path};
-use color_eyre::Result;
+use toml;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Log {

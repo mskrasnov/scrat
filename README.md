@@ -1,5 +1,7 @@
 # Scrat
 
+![](assets/main_win.png)
+
 Scrat is a simple console Mastodon client written and Rust. Developing it as a hobby in freetime.
 
 ## Features
@@ -11,6 +13,7 @@ Scrat is a simple console Mastodon client written and Rust. Developing it as a h
 
 - **OS:** Windows, Linux (coming soon);
 - **Programming language:** Rust;
+- **User interface:** console pseudographic (by `cursive`);
 <!-- - **Supported languages:** English, Russian (using `fluent`); -->
 
 ## Roadmap
